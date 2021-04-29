@@ -68,9 +68,9 @@ twpConfig.onReady(function() {
         try {
             newNodes.forEach(nn => {
                 if (removedNodes.indexOf(nn) != -1) return;
-                
+
                 let newNodesToTranslate = getNodesToTranslate(nn)
-    
+
                 for (const i in newNodesToTranslate) {
                     const newNodesInfo = newNodesToTranslate[i].nodesInfo
                     let finded = false
@@ -97,13 +97,13 @@ twpConfig.onReady(function() {
 
     const mutationObserver = new MutationObserver(function(mutations) {
         const nodesToTranslate = []
-        
+
         mutations.forEach(mutation => {
             mutation.addedNodes.forEach(addedNode => {
                 if (htmlTagsNoTranslate.indexOf(addedNode.nodeName) == -1) {
                     if (htmlTagsInlineText.indexOf(addedNode.nodeName) == -1) {
                         if (htmlTagsInlineIgnore.indexOf(addedNode.nodeName) == -1) {
-                            nodesToTranslate.push(addedNode) 
+                            nodesToTranslate.push(addedNode)
                         }
                     }
                 }
@@ -113,7 +113,7 @@ twpConfig.onReady(function() {
                 removedNodes.push(removedNode)
             })
         })
-        
+
         nodesToTranslate.forEach(nnt => {
             if (newNodes.indexOf(nnt) == -1) {
                 newNodes.push(nnt)
@@ -147,7 +147,7 @@ twpConfig.onReady(function() {
     function getNodesToTranslate(root=document.body) {
         const nodesToTranslate = [{isTranslated: false, parent: null, nodesInfo: []}]
         let index = 0
-        
+
         const getAllNodes = function (element) {
             if (element.nodeType == 1 || element.nodeType == 11) {
                 if (element.nodeType == 1) {
@@ -168,12 +168,12 @@ twpConfig.onReady(function() {
                         if (htmlTagsInlineText.indexOf(value.nodeName) == -1) {
                             if (nodesToTranslate[index].nodesInfo.length > 0) {
                                 nodesToTranslate.push({isTranslated: false, parent: null, nodesInfo: []})
-                                index++ 
+                                index++
                             }
                             getAllNodes(value)
                             if (nodesToTranslate[index].nodesInfo.length > 0) {
                                 nodesToTranslate.push({isTranslated: false, parent: null, nodesInfo: []})
-                                index++ 
+                                index++
                             }
                         } else {
                             getAllNodes(value)
@@ -205,7 +205,7 @@ twpConfig.onReady(function() {
         if (nodesToTranslate.length > 0 && nodesToTranslate[nodesToTranslate.length-1].nodesInfo.length == 0) {
             nodesToTranslate.pop()
         }
-        
+
         return nodesToTranslate
     }
 
@@ -354,6 +354,13 @@ twpConfig.onReady(function() {
     translateDynamically()
 
     function translatePageTitle() {
+        const title = document.querySelector("title");
+        if (title && (
+            title.classList.contains("notranslate") ||
+            title.getAttribute("translate") === "no"
+        )) {
+            return;
+        }
         if (document.title.trim().length < 1) return;
         originalPageTitle = document.title
 
@@ -398,7 +405,7 @@ twpConfig.onReady(function() {
     pageTranslator.restorePage = function () {
         fooCount++
         nodesToTranslate = []
-        
+
         showOriginal.disable()
         disableMutatinObserver()
 
@@ -498,7 +505,7 @@ twpConfig.onReady(function() {
                         break
                     }
                 }
-    
+
                 observers.forEach(callback => callback(originalPageLanguage))
                 alreadyGotTheLanguage = true
             })
